@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String      @id @default(cuid()) @map("_id")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  clerkUserId String      @unique
+  FirstName   String?
+  LastName    String?
+  SKill       String?
+  LinkdinId   String?
+  GithubId    String?
+  imageUrl    String
+  newUser     Boolean     @default(true)
+  posts       Post[]      @relation("UserPosts")
+  location    String?
+  followers   Follower[]  @relation("Followers")
+  followings  Following[] @relation("Following")
+}
+
+model Post {
+  id           String   @id @default(cuid()) @map("_id")
+  clerkuserId  String
+  user         User     @relation(fields: [clerkuserId], references: [clerkUserId], name: "UserPosts", onDelete: Cascade)
+  comment      String
+  imageUrl     String
+  imageFileUrl String?
+  FirstName    String?
+  LastName     String?
+  createdAt    DateTime @default(now())
+  Type         String
+}
+
+model Follower {
+  id         String   @id @default(cuid()) @map("_id")
+  followedAt DateTime @default(now())
+  followerId String
+  imageUrl   String
+  userId     String
+  FirstName   String?
+  SKill       String?
+  LastName    String?
+  user       User     @relation(fields: [userId], references: [id], name: "Followers", onDelete: Cascade)
+}
+
+model Following {
+  id          String   @id @default(cuid()) @map("_id")
+  followedAt  DateTime @default(now())
+  followingId String
+  imageUrl    String
+  userId      String
+  FirstName   String?
+  LastName    String?
+  SKill       String?
+  user        User     @relation(fields: [userId], references: [id], name: "Following", onDelete: Cascade)
+}
+
+model Chat{
+    id          String   @id @default(cuid()) @map("_id")
+    sender      String
+    receiver    String
+    message     String?
+    attachmentUrl   String?
+    sentAt DateTime @default(now())
+}
